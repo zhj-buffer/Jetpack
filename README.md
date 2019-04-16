@@ -4,7 +4,7 @@ Install the jetpack and flash the jetson board offline
 首先
 
 
-cp /etc/apt/sources.list etc/apt/sources.list_bak
+		cp /etc/apt/sources.list etc/apt/sources.list_bak
 #sed -i 's/ports.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
 sed -i 's/ports.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
 apt update
