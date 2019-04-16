@@ -1,24 +1,57 @@
 # Jetpack
-Install the jetpack and flash the jetson board offline
+###Install the jetpack and flash the jetson board offline
+Note: This document help those guys who never flashed the board sucessfully with Jetpack or sdkmanager tools. If the tools works well pls SKIP to the end.
 
-首先
+***
+Tuesday, 16. April 2019 02:57PM 
 
+- Run [sdkmanager](https://developer.nvidia.com/embedded/downloads)  or [JetPack](https://developer.nvidia.com/embedded/downloads) from Jetson Download Center.
 
-		cp /etc/apt/sources.list etc/apt/sources.list_bak
-#sed -i 's/ports.ubuntu.com/mirrors.tuna.tsinghua.edu.cn/g' /etc/apt/sources.list
-sed -i 's/ports.ubuntu.com/mirrors.ustc.edu.cn/g' /etc/apt/sources.list
-apt update
-apt upgrade -y
+-  Choose whatever you want to install. Accept the license agreements.
 
- dpkg -i cuda-repo-l4t-10-0-local-10.0.166_1.0-1_arm64.deb
- apt-key add /var/cuda-repo-10-0-local-10.0.166/7fa2af80.pub
- dpkg -i /var/cuda-repo-10-0-local-10.0.166/cuda-*
- dpkg -i libcudnn7-dev_7.3.1.28-1+cuda10.0_arm64.deb libcudnn7-doc_7.3.1.28-1+cuda10.0_arm64.deb
- dpkg -i libnvinfer5_5.0.6-1+cuda10.0_arm64.deb libnvinfer-dev_5.0.6-1+cuda10.0_arm64.deb libnvinfer-samples_5.0.6-1+cuda10.0_all.deb
- dpkg -i libopencv_3.3.1-2-g31ccdfe11_arm64.deb libopencv-dev_3.3.1-2-g31ccdfe11_arm64.deb libopencv-python_3.3.1-2-g31ccdfe11_arm64.deb libopencv-samples_3.3.1-2-g31ccdfe11_arm64.deb
- dpkg -i libvisionworks-repo_1.6.0.500n_arm64.deb libvisionworks-sfm-repo_0.90.4_arm64.deb libvisionworks-tracking-repo_0.88.2_arm64.deb
- dpkg -i  python3-libnvinfer_5.0.6-1+cuda10.0_arm64.deb python3-libnvinfer-dev_5.0.6-1+cuda10.0_arm64.deb  python-libnvinfer_5.0.6-1+cuda10.0_arm64.deb python-libnvinfer-dev_5.0.6-1+cuda10.0_arm64.deb  tensorrt_5.0.6.3-1+cuda10.0_arm64.deb  uff-converter-tf_5.0.6-1+cuda10.0_arm64.deb
+![](imgs/20190416-150043.png) . Then continue 
+	
+- OK, you are failed to flash the board but you have got everything you need. let's workarount it.
 
- apt update && apt install -f
- 
- dpkg -i graphsurgeon-tf_5.0.6-1+cuda10.0_arm64.deb
+![](imgs/20190416-151042.png)
+
+You can see the file which need to be installed are all under this folder. In case you are using sdkmanger. The rootfs are locate under "~/nvidia/nvidia_sdk/JetPack_4.2_Linux_P2888/Linux_for_Tegra$"
+![](imgs/20190416-151308.png)
+
+- Try to chroot to jetson roofs to cross install all the package you need. Now you are under "~/nvidia/nvidia_sdk/JetPack_4.2_Linux_P2888/Linux_for_Tegra"
+
+On X86 Host:
+
+		sudo cp /etc/resolv.conf rootfs/etc/
+		sudo cp qemu-aarch64-static rootfs/usr/bin/
+		sudo cp -rf ~/Downloads/nvidia/sdkm_downloads/ rootfs/
+		sudo cp install.sh rootfs/sdkm_downloads
+		sudo bash ch-mount.sh -m rootfs
+	
+Now you are under rootfs. Let's install all the package.
+
+		cd sdkm_downloads && bash install.sh
+		apt update && apt install -f
+		exit
+
+Exit the rootfs. Now you are returned to X86 Host.
+
+		sudo bash ch-mount.sh -u rootfs
+		sudo rm rootfs/usr/bin/qemu-aarch64-static
+		sudo rm rootfs/sdkm_downloads -rf
+
+- Now let's begin to flash the jetson board. Fist put the Xavier to recover mode. 
+Note: the usb-type-c used for flash the board should be close to the led. Do not use the one close to the dc input. Check with comman:
+
+		lsusb
+You'll get:
+
+		Bus 002 Device 015: ID 0955:7020 NVidia Corp. 
+		sudo ./apply_binaries.sh
+		sudo ./flash.sh jetson-xavier mmcblk0p1
+
+	For TX2: 
+
+		sudo ./flash.sh jetson-tx2 mmcblk0p1
+		
+After about 30min there will be a pop-up window to notice you to setup. After that every is ready. Next flash cycle, just run the last command.
