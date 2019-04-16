@@ -40,13 +40,15 @@ Exit the rootfs. Now you are returned to X86 Host.
 		sudo rm rootfs/usr/bin/qemu-aarch64-static
 		sudo rm rootfs/sdkm_downloads -rf
 
-- Now let's begin to flash the jetson board. Fist put the Xavier to recover mode. 
-Note: the usb-type-c used for flash the board should be close to the led. Do not use the one close to the dc input. Check with comman:
+- Now let's begin to flash the jetson board. First put the Xavier into recover mode. 
+Note: The usb-type-c used for flashing the board should be close to the led. Do not use the one close to the dc input. Check with command:
 
 		lsusb
 You'll get:
 
 		Bus 002 Device 015: ID 0955:7020 NVidia Corp. 
+Continue:
+
 		sudo ./apply_binaries.sh
 		sudo ./flash.sh jetson-xavier mmcblk0p1
 
@@ -54,4 +56,4 @@ You'll get:
 
 		sudo ./flash.sh jetson-tx2 mmcblk0p1
 		
-After about 30min there will be a pop-up window to notice you to setup. After that every is ready. Next flash cycle, just run the last command.
+After about 30min there will be a pop-up window to notice you to setup. After that everything is ready. Next flash cycle, just run the last. command.
